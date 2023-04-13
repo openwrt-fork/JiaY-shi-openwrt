@@ -104,6 +104,11 @@ platform_do_upgrade() {
 		CI_ROOT_UBIPART=ubi
 		nand_do_upgrade "$1"
 		;;
+	glinet,gl-mt2500)
+		CI_KERNPART="kernel"
+		CI_ROOTPART="rootfs"
+		emmc_do_upgrade "$1"
+		;;
 	*)
 		nand_do_upgrade "$1"
 		;;
@@ -124,6 +129,15 @@ platform_check_image() {
 			echo "Invalid image type."
 			return 1
 		}
+		return 0
+		;;
+	glinet,gl-mt2500)
+		magic="$(dd if="$1" bs=1 skip=257 count=5 2>/dev/null)"
+		[ "$magic" != "ustar" ] && {
+			echo "Invalid image type."
+			return 1
+		}
+
 		return 0
 		;;
 	*)
